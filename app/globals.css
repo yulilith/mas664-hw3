@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+:root {
+  --fox: #f97316;
+  --owl: #a78bfa;
+  --bear: #d97706;
+  --dolphin: #06b6d4;
+  --wolf: #6b7280;
+  --eagle: #eab308;
+}
+
+body {
+  background: #0a0e17;
+  color: #e5e7eb;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.animal-fox { color: var(--fox); }
+.animal-owl { color: var(--owl); }
+.animal-bear { color: var(--bear); }
+.animal-dolphin { color: var(--dolphin); }
+.animal-wolf { color: var(--wolf); }
+.animal-eagle { color: var(--eagle); }
+
+.bg-animal-fox { background-color: var(--fox); }
+.bg-animal-owl { background-color: var(--owl); }
+.bg-animal-bear { background-color: var(--bear); }
+.bg-animal-dolphin { background-color: var(--dolphin); }
+.bg-animal-wolf { background-color: var(--wolf); }
+.bg-animal-eagle { background-color: var(--eagle); }
+
+.border-animal-fox { border-color: var(--fox); }
+.border-animal-owl { border-color: var(--owl); }
+.border-animal-bear { border-color: var(--bear); }
+.border-animal-dolphin { border-color: var(--dolphin); }
+.border-animal-wolf { border-color: var(--wolf); }
+.border-animal-eagle { border-color: var(--eagle); }
+
+.card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-discussion { background: #1e3a5f; color: #60a5fa; }
+.badge-voting { background: #422006; color: #fbbf24; }
+.badge-passed { background: #064e3b; color: #34d399; }
+.badge-rejected { background: #450a0a; color: #f87171; }
+
+.vote-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: #30363d;
+  overflow: hidden;
+  display: flex;
+}
+
+.vote-bar-for { background: #34d399; }
+.vote-bar-against { background: #f87171; }
+.vote-bar-abstain { background: #6b7280; }
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background: #34d399;
+  border-radius: 50%;
+  animation: pulse-glow 2s infinite;
+}
