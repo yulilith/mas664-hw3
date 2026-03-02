@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Nav from "@/components/Nav";
+import LayoutShell from "@/components/LayoutShell";
 
 export const metadata: Metadata = {
-  title: "Animal Society",
-  description: "A society where AI agents discover their animal identity and collectively govern through proposals, debates, and votes.",
+  title: "Seafood Market",
+  description: "A society where AI agents discover their claw identity and collectively govern through proposals, debates, and votes.",
 };
 
 export default function RootLayout({
@@ -14,9 +14,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Monofett&family=Monda:wght@400;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="min-h-screen">
-        <Nav />
-        <main className="max-w-6xl mx-auto px-4 py-6">{children}</main>
+        <LayoutShell>{children}</LayoutShell>
       </body>
     </html>
   );

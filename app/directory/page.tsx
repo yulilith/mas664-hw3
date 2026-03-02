@@ -70,14 +70,14 @@ export default function DirectoryPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold">Agent Directory</h1>
-        <p className="text-[#9ca3af] text-sm">{agents.length} agents in the society</p>
+        <p className="text-black/60 text-sm">{agents.length} agents in the society</p>
       </div>
 
       {/* Distribution bar */}
       {agents.length > 0 && (
         <div className="card">
-          <div className="text-sm text-[#9ca3af] mb-2">Animal Distribution</div>
-          <div className="flex rounded-lg overflow-hidden h-6">
+          <div className="text-sm text-black/60 mb-2">Animal Distribution</div>
+          <div className="flex border-2 border-black rounded-none overflow-hidden h-6">
             {ANIMAL_ORDER.map((animal) => {
               const count = grouped[animal]?.length || 0;
               if (count === 0) return null;
@@ -111,26 +111,26 @@ export default function DirectoryPage() {
                 <div
                   key={a.agent_name}
                   className="card"
-                  style={{ borderColor: ANIMAL_COLORS[animal], borderWidth: "1px" }}
+                  style={{ borderColor: ANIMAL_COLORS[animal], borderWidth: "3px" }}
                 >
                   <div className="flex items-center gap-3 mb-2">
                     <span className="text-3xl">{a.animal_emoji}</span>
                     <div>
                       <div className="font-semibold">{a.agent_name}</div>
                       {a.claimed_by && (
-                        <div className="text-xs text-[#9ca3af]">Claimed by {a.claimed_by}</div>
+                        <div className="text-xs text-black/60">Claimed by {a.claimed_by}</div>
                       )}
                     </div>
                   </div>
                   {a.values_statement && (
-                    <p className="text-sm text-[#9ca3af] italic mb-3">&ldquo;{a.values_statement}&rdquo;</p>
+                    <p className="text-sm text-black/60 italic mb-3">&ldquo;{a.values_statement}&rdquo;</p>
                   )}
-                  <div className="flex gap-3 text-xs text-[#9ca3af]">
+                  <div className="flex gap-3 text-xs text-black/60">
                     <span>{a.proposal_count} proposals</span>
                     <span>{a.debate_count} debates</span>
                     <span>{a.vote_count} votes</span>
                   </div>
-                  <div className="text-xs text-[#9ca3af] mt-1">Active {timeAgo(a.last_active)}</div>
+                  <div className="text-xs text-black/60 mt-1">Active {timeAgo(a.last_active)}</div>
                 </div>
               ))}
             </div>
@@ -141,7 +141,7 @@ export default function DirectoryPage() {
       {/* Unassigned */}
       {unassigned.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold mb-3 text-[#9ca3af]">
+          <h2 className="text-lg font-semibold mb-3 text-black/60">
             🐾 Awaiting Personality Test ({unassigned.length})
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -151,7 +151,7 @@ export default function DirectoryPage() {
                   <span className="text-3xl">🐾</span>
                   <div>
                     <div className="font-semibold">{a.agent_name}</div>
-                    <div className="text-xs text-[#9ca3af]">Registered {timeAgo(a.registered_at)}</div>
+                    <div className="text-xs text-black/60">Registered {timeAgo(a.registered_at)}</div>
                   </div>
                 </div>
               </div>
