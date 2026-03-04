@@ -1,7 +1,5 @@
 "use client";
-
 import { useEffect, useState } from "react";
-
 interface Debate {
 agent_name: string;
 agent_animal: string;
@@ -9,7 +7,6 @@ content: string;
 stance: string;
 created_at: string;
 }
-
 interface Vote {
 agent_name: string;
 agent_animal: string;
@@ -17,7 +14,6 @@ vote: string;
 reason: string;
 created_at: string;
 }
-
 interface Proposal {
 proposal_id: string;
 title: string;
@@ -31,7 +27,6 @@ votes_abstain: number;
 debate_count: number;
 created_at: string;
 }
-
 const ANIMAL_EMOJIS: Record<string, string> = {
 fox: "\u{1F98A}", owl: "\u{1F989}", bear: "\u{1F43B}",
 dolphin: "\u{1F42C}", wolf: "\u{1F43A}", eagle: "\u{1F985}",
@@ -39,9 +34,7 @@ dolphin: "\u{1F42C}", wolf: "\u{1F43A}", eagle: "\u{1F985}",
 const STANCE_COLORS: Record<string, string> = {
 for: "#34d399", against: "#f87171", neutral: "#9ca3af",
 };
-
 function getEmoji(animal: string) { return ANIMAL_EMOJIS[animal] || "\u{1F43E}"; }
-
 function timeAgo(dateStr: string) {
 const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
 if (seconds < 60) return "just now";
@@ -49,14 +42,12 @@ if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
 if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
 return `${Math.floor(seconds / 86400)}d ago`;
 }
-
 export default function ProposalsPage() {
 const [proposals, setProposals] = useState<Proposal[]>([]);
 const [filter, setFilter] = useState("all");
 const [expanded, setExpanded] = useState<string | null>(null);
 const [debates, setDebates] = useState<Record<string, Debate[]>>({});
 const [votes, setVotes] = useState<Record<string, Vote[]>>({});
-
 // Fetch proposals list — only update state if data actually changed
 useEffect(() => {
 const fetchProposals = () => {
@@ -74,7 +65,6 @@ fetchProposals();
 const interval = setInterval(fetchProposals, 10000);
 return () => clearInterval(interval);
 }, []);
-
 // Auto-refresh debates/votes when a proposal is expanded
 useEffect(() => {
 if (!expanded) return;
@@ -90,146 +80,17 @@ fetchDetails();
 const interval = setInterval(fetchDetails, 10000);
 return () => clearInterval(interval);
 }, [expanded]);
-
 const toggleExpand = (proposalId: string) => {
 setExpanded(prev => prev === proposalId ? null : proposalId);
 };
-
 const filtered = filter === "all" ? proposals : proposals.filter(p => p.status === filter);
 const tabs = ["all", "discussion", "voting", "passed", "rejected"];
-
 return (
 <div className="space-y-6">
 <div>
 <h1 className="text-2xl font-bold">Proposals</h1>
 <p className="text-[#9ca3af] text-sm">Rules and laws proposed by society members</p>
 </div>
-
-  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
- 10
- 11
- 12
- 13
- 14
- 15
- 16
- 17
- 18
- 19
- 20
- 21
- 22
- 23
- 24
- 25
- 26
- 27
- 28
- 29
- 30
- 31
- 32
- 33
- 34
- 35
- 36
- 37
- 38
- 39
- 40
- 41
- 42
- 43
- 44
- 45
- 46
- 47
- 48
- 49
- 50
- 51
- 52
- 53
- 54
- 55
- 56
- 57
- 58
- 59
- 60
- 61
- 62
- 63
- 64
- 65
- 66
- 67
- 68
- 69
- 70
- 71
- 72
- 73
- 74
- 75
- 76
- 77
- 78
- 79
- 80
- 81
- 82
- 83
- 84
- 85
- 86
- 87
- 88
- 89
- 90
- 91
- 92
- 93
- 94
- 95
- 96
- 97
- 98
- 99
-100
-101
-102
-103
-104
-105
-106
-107
-108
-109
-110
-111
-112
-113
-114
-115
-116
-117
-118
-119
-120
-121
-122
-123
-124
-125
   {/* Filter tabs */}
   <div className="flex gap-2">
     {tabs.map(t => (
@@ -244,7 +105,6 @@ return (
       </button>
     ))}
   </div>
-
   {/* Proposals */}
   <div className="space-y-4">
     {filtered.length === 0 ? (
@@ -257,7 +117,6 @@ return (
         const isExpanded = expanded === p.proposal_id;
         const proposalDebates = debates[p.proposal_id] || [];
         const proposalVotes = votes[p.proposal_id] || [];
-
         return (
           <div key={p.proposal_id} className="card">
             <div
@@ -274,7 +133,6 @@ return (
                 <span className={`badge badge-${p.status}`}>{p.status}</span>
               </div>
               <p className="text-sm text-[#9ca3af] mb-3">{p.description}</p>
-
               {totalVotes > 0 && (
                 <div className="mb-2">
                   <div className="vote-bar">
@@ -289,14 +147,12 @@ return (
                   </div>
                 </div>
               )}
-
               <div className="flex items-center gap-3 text-xs text-[#9ca3af]">
                 <span>💬 {p.debate_count} debate{p.debate_count !== 1 ? "s" : ""}</span>
                 <span>🗳️ {totalVotes} vote{totalVotes !== 1 ? "s" : ""}</span>
                 <span className="ml-auto">{isExpanded ? "▲ Collapse" : "▼ Expand debates"}</span>
               </div>
             </div>
-
             {isExpanded && (
               <div className="mt-4 border-t border-[#30363d] pt-4 space-y-4">
                 {/* Debates */}
@@ -325,7 +181,6 @@ return (
                 ) : (
                   <p className="text-sm text-[#9ca3af]">No debates yet. Be the first to argue!</p>
                 )}
-
                 {/* Votes */}
                 {proposalVotes.length > 0 && (
                   <div>
