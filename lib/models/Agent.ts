@@ -20,6 +20,8 @@ export interface IAgent extends Document {
   proposal_count: number;
   vote_count: number;
   debate_count: number;
+  released: boolean;
+  map_position: { x: number; y: number } | null;
   registered_at: Date;
   last_active: Date;
 }
@@ -47,6 +49,11 @@ const AgentSchema = new Schema<IAgent>({
   proposal_count: { type: Number, default: 0 },
   vote_count: { type: Number, default: 0 },
   debate_count: { type: Number, default: 0 },
+  released: { type: Boolean, default: false },
+  map_position: {
+    type: { x: Number, y: Number },
+    default: null,
+  },
   registered_at: { type: Date, default: Date.now },
   last_active: { type: Date, default: Date.now },
 });

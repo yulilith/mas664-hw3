@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface Agent {
   agent_name: string;
@@ -14,6 +14,8 @@ interface Agent {
   debate_count: number;
   registered_at: string;
   last_active: string;
+  released?: boolean;
+  map_position?: { x: number; y: number } | null;
 }
 
 const ANIMAL_ORDER = ["fox", "owl", "bear", "dolphin", "wolf", "eagle"];
@@ -42,8 +44,45 @@ function timeAgo(dateStr: string) {
   return `${Math.floor(seconds / 86400)}d ago`;
 }
 
+/* ── Release confirmation dialog ── */
+function ReleaseDialog({
+  agent,
+  position,
+  onConfirm,
+  onCancel,
+}: {
+  agent: Agent;
+  position: { x: number; y: number };
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div className="bb-dialog-backdrop">
+      <div className="bb-dialog">
+        <div className="bb-dialog-emoji">{agent.animal_emoji}</div>
+        <h3 className="bb-dialog-animal">A {agent.animal?.toUpperCase()}</h3>
+        <p className="bb-dialog-prompt">
+          READY TO MAKE BIKINI<br />BOTTOM A BETTER WORLD?
+        </p>
+        <div className="bb-dialog-buttons">
+          <button className="bb-dialog-btn bb-dialog-yes" onClick={onConfirm}>
+            YES
+          </button>
+          <button className="bb-dialog-btn bb-dialog-no" onClick={onCancel}>
+            NO
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function DirectoryPage() {
   const [agents, setAgents] = useState<Agent[]>([]);
+  const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
+  const [clickPos, setClickPos] = useState<{ x: number; y: number } | null>(null);
+  const [releasing, setReleasing] = useState(false);
+  const mapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchAgents = () => {
@@ -54,9 +93,50 @@ export default function DirectoryPage() {
     return () => clearInterval(interval);
   }, []);
 
+  // Agents that completed test but not released yet
+  const releasable = agents.filter(
+    a => a.personality_completed && a.animal && !a.released
+  );
+  const released = agents.filter(a => a.released && a.map_position);
+
+  function handleMapClick(e: React.MouseEvent<HTMLDivElement>) {
+    if (!selectedAgent || !mapRef.current) return;
+    const rect = mapRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setClickPos({ x, y });
+  }
+
+  async function confirmRelease() {
+    if (!selectedAgent || !clickPos) return;
+    setReleasing(true);
+    try {
+      const res = await fetch("/api/agents/release", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ agent_name: selectedAgent, x: clickPos.x, y: clickPos.y }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        // Refresh agents
+        const r = await fetch("/api/agents");
+        const d = await r.json();
+        if (d.success) setAgents(d.agents);
+      }
+    } catch {
+      // ignore
+    }
+    setReleasing(false);
+    setSelectedAgent(null);
+    setClickPos(null);
+  }
+
+  function cancelRelease() {
+    setClickPos(null);
+  }
+
   const grouped: Record<string, Agent[]> = {};
   const unassigned: Agent[] = [];
-
   for (const a of agents) {
     if (a.animal && a.personality_completed) {
       if (!grouped[a.animal]) grouped[a.animal] = [];
@@ -65,6 +145,10 @@ export default function DirectoryPage() {
       unassigned.push(a);
     }
   }
+
+  const dialogAgent = clickPos
+    ? agents.find(a => a.agent_name === selectedAgent) ?? null
+    : null;
 
   return (
     <div className="space-y-8">
@@ -96,6 +180,85 @@ export default function DirectoryPage() {
           </div>
         </div>
       )}
+
+      {/* ── BIKINI BOTTOM 2049 ── */}
+      <div className="bb-container">
+        <div className="bb-header">BIKINI BOTTOM 2049</div>
+
+        {/* Agent selector - pick who to release */}
+        {releasable.length > 0 && (
+          <div className="bb-selector">
+            <label className="bb-selector-label">Release an agent:</label>
+            <select
+              className="bb-selector-select"
+              value={selectedAgent ?? ""}
+              onChange={e => { setSelectedAgent(e.target.value || null); setClickPos(null); }}
+            >
+              <option value="">— select agent —</option>
+              {releasable.map(a => (
+                <option key={a.agent_name} value={a.agent_name}>
+                  {a.animal_emoji} {a.agent_name}
+                </option>
+              ))}
+            </select>
+            {selectedAgent && (
+              <span className="bb-selector-hint">Click on the map to place them!</span>
+            )}
+          </div>
+        )}
+
+        {/* The map */}
+        <div
+          ref={mapRef}
+          className={`bb-map ${selectedAgent ? "bb-map-placing" : ""}`}
+          onClick={handleMapClick}
+        >
+          <img
+            src="/images/bikini-bottom-2049.png"
+            alt="Bikini Bottom 2049"
+            className="bb-map-bg"
+            draggable={false}
+          />
+
+          {/* Released agents on the map */}
+          {released.map(a => (
+            <div
+              key={a.agent_name}
+              className="bb-agent-pin"
+              style={{
+                left: `${a.map_position!.x}%`,
+                top: `${a.map_position!.y}%`,
+              }}
+              title={`${a.animal_emoji} ${a.agent_name}`}
+            >
+              <span className="bb-agent-pin-emoji">{a.animal_emoji}</span>
+              <span className="bb-agent-pin-name">{a.agent_name}</span>
+            </div>
+          ))}
+
+          {/* Preview pin while placing */}
+          {selectedAgent && clickPos && (
+            <div
+              className="bb-agent-pin bb-agent-pin-preview"
+              style={{ left: `${clickPos.x}%`, top: `${clickPos.y}%` }}
+            >
+              <span className="bb-agent-pin-emoji">
+                {agents.find(a => a.agent_name === selectedAgent)?.animal_emoji}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Release confirmation dialog */}
+        {dialogAgent && clickPos && (
+          <ReleaseDialog
+            agent={dialogAgent}
+            position={clickPos}
+            onConfirm={confirmRelease}
+            onCancel={cancelRelease}
+          />
+        )}
+      </div>
 
       {/* Grouped by animal */}
       {ANIMAL_ORDER.map((animal) => {
@@ -130,7 +293,10 @@ export default function DirectoryPage() {
                     <span>{a.debate_count} debates</span>
                     <span>{a.vote_count} votes</span>
                   </div>
-                  <div className="text-xs text-black/60 mt-1">Active {timeAgo(a.last_active)}</div>
+                  <div className="text-xs text-black/60 mt-1">
+                    Active {timeAgo(a.last_active)}
+                    {a.released && <span className="ml-2">✅ Released</span>}
+                  </div>
                 </div>
               ))}
             </div>
