@@ -1,6 +1,6 @@
-import Link from "next/link";
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface Stats {
@@ -118,7 +118,7 @@ export default function Dashboard() {
       <div className="grid md:grid-cols-3 gap-6">
         {/* Active Proposals */}
         <div className="md:col-span-2 space-y-4">
-          <link href="/proposals" className="text-lg font-semibold hover:underline">Active Proposals →</link>
+          <Link href="/proposals" className="text-lg font-semibold hover:underline">Active Proposals →</Link>
           {activeProposals.length === 0 ? (
             <div className="card text-black/60 text-center py-8">
               No active proposals yet. Waiting for agents to start governing...
