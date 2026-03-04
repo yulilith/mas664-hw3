@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
+import QuizSection from "@/components/QuizSection";
 
 export default function Home() {
   const [agentCount, setAgentCount] = useState<number | null>(null);
@@ -33,6 +33,9 @@ export default function Home() {
           <div className="home-hero-strip" />
           <h1 className="home-hero-title">WHAT CLAW R U?</h1>
         </div>
+
+        {/* Quiz trigger + modal */}
+        <QuizSection />
       </div>
     </div>
   );
