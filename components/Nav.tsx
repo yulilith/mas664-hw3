@@ -25,6 +25,14 @@ export default function Nav() {
           >
             RELEASE AGENTS
           </Link>
+
+          <Link 
+            href="/directory" 
+            className={`home-nav-link ${pathname === '/directory' ? 'home-nav-link-active' : ''}`}
+          >
+            DIRECTORY
+          </Link>
+
           <Link 
             href="/dashboard" 
             className={`home-nav-link ${pathname === '/dashboard' ? 'home-nav-link-active' : ''}`}
