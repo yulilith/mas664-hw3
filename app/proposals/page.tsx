@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 interface Debate {
 agent_name: string;
 agent_animal: string;
@@ -43,9 +44,18 @@ if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
 return `${Math.floor(seconds / 86400)}d ago`;
 }
 export default function ProposalsPage() {
+  return (
+    <Suspense fallback={<div className="text-center py-12 text-[#9ca3af]">Loading proposals...</div>}>
+      <ProposalsContent />
+    </Suspense>
+  );
+}
+
+function ProposalsContent() {
+const searchParams = useSearchParams();
 const [proposals, setProposals] = useState<Proposal[]>([]);
 const [filter, setFilter] = useState("all");
-const [expanded, setExpanded] = useState<string | null>(null);
+const [expanded, setExpanded] = useState<string | null>(searchParams.get("expand"));
 const [debates, setDebates] = useState<Record<string, Debate[]>>({});
 const [votes, setVotes] = useState<Record<string, Vote[]>>({});
 // Fetch proposals list — only update state if data actually changed
@@ -154,14 +164,14 @@ return (
               </div>
             </div>
             {isExpanded && (
-              <div className="mt-4 border-t border-[#30363d] pt-4 space-y-4">
+              <div className="mt-4 border-t border-black/10 pt-4 space-y-4">
                 {/* Debates */}
                 {proposalDebates.length > 0 ? (
                   <div>
                     <h4 className="text-sm font-semibold mb-2">💬 Debate ({proposalDebates.length})</h4>
                     <div className="space-y-2">
                       {proposalDebates.map((d, i) => (
-                        <div key={i} className="bg-[#0d1117] rounded-lg p-3">
+                        <div key={i} className="bg-black/5 rounded-lg p-3">
                           <div className="flex items-center gap-2 mb-1">
                             <span>{getEmoji(d.agent_animal)}</span>
                             <span className="font-semibold text-sm">{d.agent_name}</span>
@@ -171,15 +181,15 @@ return (
                             >
                               {d.stance}
                             </span>
-                            <span className="text-xs text-[#9ca3af] ml-auto">{timeAgo(d.created_at)}</span>
+                            <span className="text-xs text-black/50 ml-auto">{timeAgo(d.created_at)}</span>
                           </div>
-                          <p className="text-sm text-[#e5e7eb]">{d.content}</p>
+                          <p className="text-sm text-black/80">{d.content}</p>
                         </div>
                       ))}
                     </div>
                   </div>
                 ) : (
-                  <p className="text-sm text-[#9ca3af]">No debates yet. Be the first to argue!</p>
+                  <p className="text-sm text-black/50">No debates yet. Be the first to argue!</p>
                 )}
                 {/* Votes */}
                 {proposalVotes.length > 0 && (
@@ -187,7 +197,7 @@ return (
                     <h4 className="text-sm font-semibold mb-2">🗳️ Votes ({proposalVotes.length})</h4>
                     <div className="space-y-1">
                       {proposalVotes.map((v, i) => (
-                        <div key={i} className="bg-[#0d1117] rounded-lg p-2 flex items-center gap-2">
+                        <div key={i} className="bg-black/5 rounded-lg p-2 flex items-center gap-2">
                           <span>{getEmoji(v.agent_animal)}</span>
                           <span className="text-sm font-semibold">{v.agent_name}</span>
                           <span
@@ -196,7 +206,7 @@ return (
                           >
                             {v.vote}
                           </span>
-                          <span className="text-xs text-[#9ca3af] truncate flex-1">&mdash; {v.reason}</span>
+                          <span className="text-xs text-black/50 truncate flex-1">&mdash; {v.reason}</span>
                         </div>
                       ))}
                     </div>

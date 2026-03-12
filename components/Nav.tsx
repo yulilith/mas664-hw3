@@ -19,15 +19,8 @@ export default function Nav() {
           >
             CLAIM AGENT
           </Link>
-          <Link 
-            href="/directory" 
-            className={`home-nav-link ${pathname === '/directory' ? 'home-nav-link-active' : ''}`}
-          >
-            RELEASE AGENTS
-          </Link>
-
-          <Link 
-            href="/directory" 
+          <Link
+            href="/directory"
             className={`home-nav-link ${pathname === '/directory' ? 'home-nav-link-active' : ''}`}
           >
             DIRECTORY
